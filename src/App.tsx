@@ -1,26 +1,42 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { FC } from 'react';
+import { Route, Routes, useNavigate } from 'react-router-dom';
+import { BuyButton } from './components/BuyButton';
+import { SignInWithGoogle } from './components/SignInWithGoogle';
+import { SignOutButton } from './components/SignOutButton';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+interface RouteInterface {
+	path: string;
+	component: FC;
 }
 
-export default App;
+const publicRoutes: RouteInterface[] = [
+	// { path: '*', component: BuyButton },
+	{ path: '/course', component: BuyButton },
+	{ path: '/signOut', component: SignOutButton },
+	{ path: '/signIn', component: SignInWithGoogle },
+];
+export const App = () => {
+	const navigate = useNavigate();
+	return (
+		<div>
+			<ul className='app__list'>
+				{publicRoutes.map((route, index) => (
+					<button
+						key={index}
+						className='app__link'
+						onClick={() => navigate(route.path)}
+					>
+						<span className='app__link--text'>{route.component.name}</span>
+					</button>
+				))}
+			</ul>
+
+			<Routes>
+				{publicRoutes.map((route, index) => (
+					<Route key={index} path={route.path} element={<route.component />} />
+				))}
+			</Routes>
+			<h1>Пример Stripe + Firebase</h1>
+		</div>
+	);
+};
