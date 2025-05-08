@@ -2,16 +2,16 @@ import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import auth from '../firebase/firebase';
 
-// Загружаем Stripe с публичным ключом из .env
 const stripePromise = loadStripe(
 	process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || ''
 );
 
 export const BuyButton = () => {
 	const [user, setUser] = useState<any>(null);
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -25,7 +25,7 @@ export const BuyButton = () => {
 
 	const handleBuy = async () => {
 		if (!user) {
-			alert('Сначала войдите через Google');
+			toast.error('Сначала войдите через Google');
 			return;
 		}
 
@@ -35,12 +35,12 @@ export const BuyButton = () => {
 				setError('Stripe не загрузился');
 				return;
 			}
-			const token = await user.getIdToken();
 
+			const token = await user.getIdToken();
 			const res = await axios.post(
-				'http://localhost:3001/create-checkout-session',
+				'http://localhost:5000/create-checkout-session',
 				{
-					priceId: 'price_1RH8xz08ggOZUDPt028GAGR7',
+					priceId: process.env.REACT_APP_STRIPE_PRICE_ID,
 				},
 				{
 					headers: {
@@ -50,16 +50,13 @@ export const BuyButton = () => {
 				}
 			);
 
-			const sessionUrl = res.data.url;
-			window.location.href = sessionUrl;
-
-			if (sessionUrl.url) {
-				window.location.href = sessionUrl.url;
+			if (res.data.url) {
+				window.location.href = res.data.url;
 			} else {
 				setError('Не удалось получить ссылку на оплату');
 			}
 		} catch (err) {
-			console.error(err);
+			console.error('Ошибка при создании сессии оплаты:', err);
 			setError('Ошибка при создании сессии оплаты');
 		}
 	};

@@ -1,8 +1,11 @@
 import { FC } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { BuyButton } from './components/BuyButton';
+import { Cancel } from './components/Cancel';
+import { CheckCourseAccess } from './components/CheckCourseAccess';
 import { SignInWithGoogle } from './components/SignInWithGoogle';
 import { SignOutButton } from './components/SignOutButton';
+import { Success } from './components/Success';
 
 interface RouteInterface {
 	path: string;
@@ -10,10 +13,11 @@ interface RouteInterface {
 }
 
 const publicRoutes: RouteInterface[] = [
-	// { path: '*', component: BuyButton },
+	{ path: '*', component: BuyButton },
 	{ path: '/course', component: BuyButton },
 	{ path: '/signOut', component: SignOutButton },
 	{ path: '/signIn', component: SignInWithGoogle },
+	{ path: '/check', component: CheckCourseAccess },
 ];
 export const App = () => {
 	const navigate = useNavigate();
@@ -35,6 +39,8 @@ export const App = () => {
 				{publicRoutes.map((route, index) => (
 					<Route key={index} path={route.path} element={<route.component />} />
 				))}
+				<Route path='/success' element={<Success />} />
+				<Route path='/cancel' element={<Cancel />} />
 			</Routes>
 			<h1>Пример Stripe + Firebase</h1>
 		</div>
