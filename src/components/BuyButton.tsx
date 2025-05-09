@@ -25,14 +25,14 @@ export const BuyButton = () => {
 
 	const handleBuy = async () => {
 		if (!user) {
-			toast.error('Сначала войдите через Google');
+			toast.error('Please sign in with Google first.');
 			return;
 		}
 
 		try {
 			const stripe = await stripePromise;
 			if (!stripe) {
-				setError('Stripe не загрузился');
+				setError('Stripe did not load');
 				return;
 			}
 
@@ -53,20 +53,20 @@ export const BuyButton = () => {
 			if (res.data.url) {
 				window.location.href = res.data.url;
 			} else {
-				setError('Не удалось получить ссылку на оплату');
+				setError('Failed to get payment link');
 			}
 		} catch (err) {
-			console.error('Ошибка при создании сессии оплаты:', err);
-			setError('Ошибка при создании сессии оплаты');
+			console.error('Error creating payment session:', err);
+			setError('Error creating payment session');
 		}
 	};
 
-	if (loading) return <p>Загрузка...</p>;
+	if (loading) return <p>Loading...</p>;
 
 	return (
 		<div>
 			<button onClick={handleBuy} disabled={!user}>
-				Купить курс
+				Buy course
 			</button>
 			{error && <p style={{ color: 'red' }}>{error}</p>}
 		</div>

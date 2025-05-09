@@ -13,7 +13,6 @@ interface RouteInterface {
 }
 
 const publicRoutes: RouteInterface[] = [
-	{ path: '*', component: BuyButton },
 	{ path: '/course', component: BuyButton },
 	{ path: '/signOut', component: SignOutButton },
 	{ path: '/signIn', component: SignInWithGoogle },
@@ -34,7 +33,7 @@ export const App = () => {
 					</button>
 				))}
 			</ul>
-
+			<h1 className='container'>Stripe + Firebase example</h1>
 			<Routes>
 				{publicRoutes.map((route, index) => (
 					<Route key={index} path={route.path} element={<route.component />} />
@@ -42,7 +41,6 @@ export const App = () => {
 				<Route path='/success' element={<Success />} />
 				<Route path='/cancel' element={<Cancel />} />
 			</Routes>
-			<h1>Пример Stripe + Firebase</h1>
 		</div>
 	);
 };

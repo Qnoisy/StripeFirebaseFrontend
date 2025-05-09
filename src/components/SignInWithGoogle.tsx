@@ -19,7 +19,7 @@ export const SignInWithGoogle = () => {
 
 	return (
 		<button className='btn primary' onClick={handleSignIn}>
-			Войти через Google
+			Sign with Google
 		</button>
 	);
 };

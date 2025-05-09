@@ -31,7 +31,6 @@ export const CheckCourseAccess = () => {
 					setError('Ошибка при проверке доступа');
 				}
 			} else {
-				// Если пользователь не авторизован, сразу ставим доступ в false
 				setAccess(false);
 			}
 
@@ -41,17 +40,17 @@ export const CheckCourseAccess = () => {
 		return () => unsubscribe();
 	}, []);
 
-	if (loading) return <p>Загрузка...</p>;
+	if (loading) return <p>Loading...</p>;
 	if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
 	return (
 		<div>
 			{access === null ? (
-				<p>Не удалось определить доступ</p>
+				<p>Unable to determine access</p>
 			) : access ? (
-				<p>У вас есть доступ к курсу! 🎉</p>
+				<p>You have access to the course! 🎉</p>
 			) : (
-				<p>Доступ к курсу отсутствует.</p>
+				<p>Access to the course is not available</p>
 			)}
 		</div>
 	);
