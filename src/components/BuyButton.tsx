@@ -38,10 +38,8 @@ export const BuyButton = () => {
 
 			const token = await user.getIdToken();
 			const res = await axios.post(
-				'http://localhost:5000/create-checkout-session',
-				{
-					priceId: process.env.REACT_APP_STRIPE_PRICE_ID,
-				},
+				'http://localhost:5000/api/create-checkout-session',
+				{},
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,

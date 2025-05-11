@@ -15,7 +15,7 @@ export const CheckCourseAccess = () => {
 					const token = await user.getIdToken();
 
 					const res = await axios.post(
-						'http://localhost:5000/check-access',
+						'http://localhost:5000/api/check-access',
 						{},
 						{
 							headers: {
