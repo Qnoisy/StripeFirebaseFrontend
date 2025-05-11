@@ -2,7 +2,6 @@ import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
 import auth from '../firebase/firebase';
 
 const stripePromise = loadStripe(
@@ -13,11 +12,31 @@ export const BuyButton = () => {
 	const [user, setUser] = useState<any>(null);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string | null>(null);
+	const [access, setAccess] = useState<boolean | null>(null);
 
 	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(auth, user => {
+		const unsubscribe = onAuthStateChanged(auth, async user => {
 			setUser(user);
 			setLoading(false);
+
+			if (user) {
+				try {
+					const token = await user.getIdToken();
+					const res = await axios.post(
+						'http://localhost:5000/api/check-access',
+						{},
+						{
+							headers: {
+								Authorization: `Bearer ${token}`,
+								'Content-Type': 'application/json',
+							},
+						}
+					);
+					setAccess(res.data.access);
+				} catch (err) {
+					console.error('Error checking access:', err);
+				}
+			}
 		});
 
 		return () => unsubscribe();
@@ -25,7 +44,7 @@ export const BuyButton = () => {
 
 	const handleBuy = async () => {
 		if (!user) {
-			toast.error('Please sign in with Google first.');
+			setError('Please sign in first.');
 			return;
 		}
 
@@ -37,6 +56,7 @@ export const BuyButton = () => {
 			}
 
 			const token = await user.getIdToken();
+
 			const res = await axios.post(
 				'http://localhost:5000/api/create-checkout-session',
 				{},
@@ -50,12 +70,12 @@ export const BuyButton = () => {
 
 			if (res.data.url) {
 				window.location.href = res.data.url;
-			} else {
-				setError('Failed to get payment link');
 			}
-		} catch (err) {
+		} catch (err: any) {
 			console.error('Error creating payment session:', err);
-			setError('Error creating payment session');
+			const errorMessage =
+				err.response?.data?.error || 'Error creating payment session';
+			setError(errorMessage);
 		}
 	};
 
@@ -63,9 +83,15 @@ export const BuyButton = () => {
 
 	return (
 		<div>
-			<button onClick={handleBuy} disabled={!user}>
-				Buy course
-			</button>
+			{access ? (
+				<div className='bg-green-100 p-4 rounded-md'>
+					<p>You already own this course.</p>
+				</div>
+			) : (
+				<button onClick={handleBuy} disabled={!user}>
+					Buy Course
+				</button>
+			)}
 			{error && <p style={{ color: 'red' }}>{error}</p>}
 		</div>
 	);
